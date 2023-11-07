@@ -1,0 +1,12 @@
+django-admin startproject mysite
+
+python manage.py runserver default port 8000 
+python manage.py runserver 8080 
+python manage.py runserver 0.0.0.0:8000
+
+python manage.py startapp firstapp
+
+
+Change your models (in models.py).
+Run python manage.py makemigrations to create migrations for those changes
+Run python manage.py migrate to apply those changes to the database.

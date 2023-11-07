@@ -1,0 +1,58 @@
+version: "3.9"
+services:
+
+  # Python Service
+  WeenoWeedy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: skanderbeno/weenoweedy
+    container_name: WeenoWeedy
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: WeenoWeedy
+      SERVICE_TAGS: dev
+      DB_HOST: weenoweedy-db
+      DB_DATABASE: weenoweedy
+      DB_PASSWORD: secretPASSWORD
+      DB_PORT: "5432"
+      DB_USERNAME: root
+      APP_ENV: local
+      L5_SWAGGER_CONST_HOST: /api
+    ports:
+      - "9000:9000"
+    working_dir: /code
+    volumes:
+      - ./:/code
+
+    command: bash -c "
+      (python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:9000)"
+      #(python manage.py runserver)"
+    networks:
+      - local_network
+
+  #postgressql Service
+  postgres:
+    image: postgres:14-alpine
+    container_name: weenoweedy-db
+    ports:
+      - 5432:5432
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=secretPASSWORD
+      - POSTGRES_USER=root
+      - POSTGRES_DB=weenoweedy
+    networks:
+      - local_network
+#Volumes
+volumes:
+  dbdata:
+    driver: local
+
+networks:
+  local_network:
+    driver: bridge
+  
+#Volumes
